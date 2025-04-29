@@ -356,6 +356,8 @@ services:
   db:
     image: supabase/postgres:15.8.1.020
     restart: unless-stopped
+    ports:
+      - "6243:5432"
     volumes:
       - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
       # Must be superuser to create event trigger
@@ -374,6 +376,8 @@ services:
       - ./volumes/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql:Z
       # Use named volume to persist pgsodium decryption key between restarts
       - db-config:/etc/postgresql-custom
+      - ./volumes/db/init-ronald.sql:/docker-entrypoint-initdb.d/init-scripts/99-ronald.sql:Z
+
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "postgres", "-h", "localhost" ]
       interval: 5s
